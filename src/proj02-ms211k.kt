@@ -14,6 +14,12 @@ import kotlin.math.pow
  *
  */
 
+fun debug(str: String, debugging: Boolean = false) {
+    if (debugging) {
+        println(str)
+    }
+}
+
 /**
  * Função que calcula a equação logística, i.e. o y' = f(tn, yn) do enunciado.
  */
@@ -35,18 +41,19 @@ fun yOfT(t: Double, y0: Double = DEF_Y0, r: Double = DEF_R, K: Double = DEF_K): 
  * A cada iteração um yn_+1 novo é calculado, baseado no yn anterior, no passo e no f(t,yn)
  * Os resultados de cada yn são salvos numa lista e retornados
  */
-fun euler(t0: Double = DEF_T0, y0: Double = DEF_Y0, h: Double = DEF_H, r: Double = DEF_R, K: Double = DEF_K, tn: Int = DEF_TN): List<Double> {
-    println("Aproximação por método de Euler:")
+fun euler(t0: Double = DEF_T0, y0: Double = DEF_Y0, h: Double = DEF_H, r: Double = DEF_R, K: Double = DEF_K, tnMax: Int = DEF_TN): List<Double> {
+    debug("Aproximação por método de Euler para t em [$t0..$tnMax]:")
+    debug(", tn , y(tn) , h , r , K ,")
     val results = mutableListOf<Double>()
-    var tj = t0;
-    var yn = y0;
+    var tn = t0
+    var yn = y0
 
-    val steps: Int  = Math.ceil(tn / h).toInt()
+    val steps: Int  = Math.ceil(tnMax / h).toInt()
     for (i in 0..steps) {
-        println("| t{$i} = ${tj} | y{$i} = ${yn} | h = ${h} | r = ${r} | K = ${K} | n = ${tn} |")
-        yn += h * yOfT(tj, yn, r, K)
+        debug(", %.${FORMAT}f , %.${FORMAT}f , ${h} , ${r} , ${K} ,".format(tn, yn))
+        yn += h * fTnYn(tn, yn, r, K)
         results.add(yn)
-        tj += h;
+        tn += h
     }
 
     return results
@@ -56,32 +63,76 @@ fun euler(t0: Double = DEF_T0, y0: Double = DEF_Y0, h: Double = DEF_H, r: Double
  * Função que compara os resultados obtidos pelo método de Euler e pelo y(t) analítico para t0 até tn, sendo acrescido
  * do passo h a cada iteração.
  */
-fun analytical(t0: Double = DEF_T0, y0: Double = DEF_Y0, h: Double = DEF_H, r: Double = DEF_R, K: Double = DEF_K, tn: Int = DEF_TN): List<Double> {
-    println("Forma analítica de y(t)")
+fun analytical(t0: Double = DEF_T0, y0: Double = DEF_Y0, h: Double = DEF_H, r: Double = DEF_R, K: Double = DEF_K, tnMax: Int = DEF_TN): List<Double> {
+    debug("Forma analítica de y(t) para t em [$t0..$tnMax]:")
+    debug(", tn , y(tn) , h , r , K ,")
     val analyticalList = mutableListOf<Double>()
+    var tn = t0
 
-    val steps: Int  = Math.ceil(tn / h).toInt()
+
+    val steps: Int  = Math.ceil(tnMax / h).toInt()
     for (i in 0..steps) {
-        val tn = t0 + h
         val yn = yOfT(tn, y0, r, K)
-        println("| t{$i} = ${tn} | y(t${i}) = ${yn} | h = ${h} | r = ${r} | K = ${K} | tn = ${tn} |")
+        debug(", %.${FORMAT}f , %.${FORMAT}f , ${h} , ${r} , ${K} ,".format(tn, yn))
         analyticalList.add(yn)
+        tn += h
     }
 
     return analyticalList
 }
 
-
-fun main(args: Array<String>) {
-    euler()
-    analytical()
-
-//    val eulerList = euler(t0, y0, h, r, K, n)
+fun compareResults(euler: List<Double>, analytical: List<Double>, h: Double) {
+    println("h = $h, euler(tn) , y(tn) , EA ,")
+    for (i in euler.indices) {
+        val deltaT = euler[i] - analytical[i]
+        println(", %.${FORMAT}f , %.${FORMAT}f , %.${FORMAT}f ,".format(euler[i], analytical[i], deltaT))
+    }
+    println("=".padEnd(80, '=') + "\n")
 }
 
-const val PRECISION = -7
+fun main(args: Array<String>) {
+//======================================================================================================================
+    // item A, executa o método de Euler e compara a aprox. obtida com o resultado de cada y(tn) analítico correspondente.
+    // resultado com K = 10, h = 0.05
+    compareResults(euler(), analytical(), DEF_H)
+
+//======================================================================================================================
+// item B, modifica alguns parâmetros e faz novamente a comparação.
+
+    // resultado com K = 100, h = 0.05
+    compareResults(euler(K = 100.0), analytical(K = 100.0), DEF_H)
+
+    val hBad = 1.5
+    // resultado com K = 10, h = 1.5
+    compareResults(euler(h = hBad), analytical(h = hBad), hBad)
+
+    // resultado com K = 100, h = 1.5
+    compareResults(euler(h = hBad, K = 100.0), analytical(h = hBad, K = 100.0), hBad)
+
+    val h1 = 0.5
+    // resultado com K = 10, h = 0.5
+    compareResults(euler(h = h1), analytical(h = h1), h1)
+
+    // resultado com K = 10, h = 0.5
+    compareResults(euler(h = h1, K = 100.0), analytical(h = h1, K = 100.0), h1)
+
+    val h2 = 0.0005
+    // resultado com K = 10, h = 0.0005
+    compareResults(euler(h = h2), analytical(h = h2), h2)
+
+    // resultado com K = 100, h = 0.0005
+    compareResults(euler(h = h2), analytical(h = h2), h2)
+
+    val hOpt = 0.00001
+    // resultado com K = 10, h = 0.00001
+    compareResults(euler(h = hOpt), analytical(h = hOpt), hOpt)
+
+    // resultado com K = 100, h = 0.00001
+    compareResults(euler(h = hOpt), analytical(h = hOpt), hOpt)
+}
+
+const val PRECISION = -5
 const val FORMAT = -PRECISION
-const val MAX_ITERATIONS = 1000L // apenas um limite de segurança para evitar loops infinitos
 const val DEF_R = 0.5
 const val DEF_K = 10.0
 const val DEF_H = 0.05

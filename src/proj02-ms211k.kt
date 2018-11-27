@@ -82,10 +82,11 @@ fun analytical(t0: Double = DEF_T0, y0: Double = DEF_Y0, h: Double = DEF_H, r: D
 }
 
 fun compareResults(euler: List<Double>, analytical: List<Double>, h: Double) {
-    println("h = $h, euler(tn) , y(tn) , EA ,")
+    println("tn+1 = tn + $h , y(tn) , euler(tn) , EA ,")
     for (i in euler.indices) {
-        val deltaT = euler[i] - analytical[i]
-        println(", %.${FORMAT}f , %.${FORMAT}f , %.${FORMAT}f ,".format(euler[i], analytical[i], deltaT))
+        val deltaT = Math.abs(analytical[i] - euler[i])
+        println("%.${FORMAT}f, %.${FORMAT}f , %.${FORMAT}f , %.${FORMAT}f ,"
+            .format(h*i, analytical[i], euler[i], deltaT))
     }
     println("=".padEnd(80, '=') + "\n")
 }

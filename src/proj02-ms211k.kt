@@ -107,29 +107,27 @@ fun main(args: Array<String>) {
     // resultado com K = 10, h = 1.5
     compareResults(euler(h = hBad), analytical(h = hBad), hBad)
 
-    // resultado com K = 100, h = 1.5
-    compareResults(euler(h = hBad, K = 100.0), analytical(h = hBad, K = 100.0), hBad)
-
     val h1 = 0.5
     // resultado com K = 10, h = 0.5
     compareResults(euler(h = h1), analytical(h = h1), h1)
 
-    // resultado com K = 10, h = 0.5
-    compareResults(euler(h = h1, K = 100.0), analytical(h = h1, K = 100.0), h1)
-
     val h2 = 0.0005
     // resultado com K = 10, h = 0.0005
-    compareResults(euler(h = h2), analytical(h = h2), h2)
-
-    // resultado com K = 100, h = 0.0005
     compareResults(euler(h = h2), analytical(h = h2), h2)
 
     val hOpt = 0.00001
     // resultado com K = 10, h = 0.00001
     compareResults(euler(h = hOpt), analytical(h = hOpt), hOpt)
 
-    // resultado com K = 100, h = 0.00001
-    compareResults(euler(h = hOpt), analytical(h = hOpt), hOpt)
+// Para K = 100
+// Resultado com K = 100, h = 1.5
+//    compareResults(euler(h = hBad, K = 100.0), analytical(h = hBad, K = 100.0), hBad)
+// Resultado com K = 100, h = 0.5
+//    compareResults(euler(h = h1, K = 100.0), analytical(h = h1, K = 100.0), h1)
+// Resultado com K = 100, h = 0.0005
+//    compareResults(euler(h = h2), analytical(h = h2), h2)
+// Resultado com K = 100, h = 0.00001
+//    compareResults(euler(h = hOpt), analytical(h = hOpt), hOpt)
 }
 
 const val PRECISION = -5

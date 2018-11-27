@@ -7,5 +7,5 @@
 
 - Via IntelliJ (open *proj02-ms211k.kt*)
 
-## Via http://try.kotlinlang.org/ putting *proj02-ms211k.kt* content there.
+- Via http://try.kotlinlang.org/ putting *proj02-ms211k.kt* content there.
 

@@ -1,8 +1,4 @@
 import java.math.BigDecimal
-import kotlin.math.abs
-import kotlin.math.absoluteValue
-import kotlin.math.exp
-import kotlin.math.pow
 
 /**
  * Autor: Rafael Matheus Garcia - RA 121295
@@ -30,7 +26,7 @@ fun debug(str: String, debugging: Boolean = false) {
  * Note que não há termo t nessa equação, ela é toda em função de yn.
  */
 fun fTnYn(yn: Double, r: Double = DEF_R, K: Double = DEF_K): Double {
-    return r*yn*(1 - (yn/K))
+    return r * yn * (1 - (yn / K))
 }
 
 /**
@@ -38,8 +34,8 @@ fun fTnYn(yn: Double, r: Double = DEF_R, K: Double = DEF_K): Double {
  * Deixei parametrizado o r e o K, mas com valores padrão conforme o item 'A' do laboratório.
  */
 fun yOfT(t: Double, y0: Double = DEF_Y0, r: Double = DEF_R, K: Double = DEF_K): Double {
-    val expRT = Math.exp(r*t) // e^(r*t)
-    return (K*y0*expRT) / (K + y0*(expRT - 1))
+    val expRT = Math.exp(r * t) // e^(r*t)
+    return (K * y0 * expRT) / (K + y0 * (expRT - 1))
 }
 
 /**
@@ -47,7 +43,14 @@ fun yOfT(t: Double, y0: Double = DEF_Y0, r: Double = DEF_R, K: Double = DEF_K): 
  * A cada iteração um y_n+1 novo é calculado, baseado no yn anterior, no passo e no f(t,yn)
  * Os resultados de cada yn são salvos numa lista e retornados
  */
-fun euler(t0: Double = DEF_T0, y0: Double = DEF_Y0, h: Double = DEF_H, r: Double = DEF_R, K: Double = DEF_K, tnMax: Int = DEF_TN): List<Double> {
+fun euler(
+    t0: Double = DEF_T0,
+    y0: Double = DEF_Y0,
+    h: Double = DEF_H,
+    r: Double = DEF_R,
+    K: Double = DEF_K,
+    tnMax: Int = DEF_TN
+): List<Double> {
     debug("Aproximação por método de Euler para t em [$t0..$tnMax]:")
     debug(", tn , y(tn) , h , r , K ,")
     val results = mutableListOf<Double>()
@@ -70,7 +73,14 @@ fun euler(t0: Double = DEF_T0, y0: Double = DEF_Y0, h: Double = DEF_H, r: Double
  * Função que compara os resultados obtidos pelo método de Euler e pelo y(t) analítico para t0 até tn, sendo acrescido
  * do passo h a cada iteração.
  */
-fun analytical(t0: Double = DEF_T0, y0: Double = DEF_Y0, h: Double = DEF_H, r: Double = DEF_R, K: Double = DEF_K, tnMax: Int = DEF_TN): List<Double> {
+fun analytical(
+    t0: Double = DEF_T0,
+    y0: Double = DEF_Y0,
+    h: Double = DEF_H,
+    r: Double = DEF_R,
+    K: Double = DEF_K,
+    tnMax: Int = DEF_TN
+): List<Double> {
     debug("Forma analítica de y(t) para t em [$t0..$tnMax]:")
     debug(", tn , y(tn) , h , r , K ,")
     val analyticalList = mutableListOf<Double>()
@@ -98,7 +108,14 @@ fun analytical(t0: Double = DEF_T0, y0: Double = DEF_Y0, h: Double = DEF_H, r: D
  * y_n+1 = yn + (1/6)*(K1 + 2K2 + 2K3 + K4)
  * Os resultados de cada yn são salvos numa lista e retornados
  */
-fun rungeKutta4th(t0: Double = DEF_T0, y0: Double = DEF_Y0, h: Double = DEF_H, r: Double = DEF_R, K: Double = DEF_K, tnMax: Int = DEF_TN): List<Double> {
+fun rungeKutta4th(
+    t0: Double = DEF_T0,
+    y0: Double = DEF_Y0,
+    h: Double = DEF_H,
+    r: Double = DEF_R,
+    K: Double = DEF_K,
+    tnMax: Int = DEF_TN
+): List<Double> {
     debug("Aproximação por Runge-Kutta 4a ordem para t em [$t0..$tnMax]:")
     debug(", tn , y(tn) , h , r , K ,")
     val results = mutableListOf<Double>()
@@ -110,10 +127,10 @@ fun rungeKutta4th(t0: Double = DEF_T0, y0: Double = DEF_Y0, h: Double = DEF_H, r
     while (tn <= tnMax.toBigDecimal()) { // enquanto o tn atual for menor ou igual ao tnMáximo
         debug(", %.${FORMAT}f , %.${FORMAT}f , ${h} , ${r} , ${K} ,".format(tn, yn))
         val k1 = h * fTnYn(yn)
-        val k2 = h * fTnYn(yn + k1/2, r, K)
-        val k3 = h * fTnYn(yn + k2/2, r, K)
+        val k2 = h * fTnYn(yn + k1 / 2, r, K)
+        val k3 = h * fTnYn(yn + k2 / 2, r, K)
         val k4 = h * fTnYn(yn + k3, r, K)
-        yn += ((k1 + 2*k2 + 2*k3 + k4) / 6)// aqui calculamos o y_n+1
+        yn += ((k1 + 2 * k2 + 2 * k3 + k4) / 6)// aqui calculamos o y_n+1
         results.add(yn)
         tn = tn.add(h.toBigDecimal()) // tn = tn + h
     }
@@ -127,8 +144,10 @@ fun compareResults(euler: List<Double>, analytical: List<Double>, rk4th: List<Do
         val deltaEuler = Math.abs(analytical[i] - euler[i])
         val deltaRK4th = Math.abs(analytical[i] - rk4th[i])
         val deltaEulerToRK = Math.abs(euler[i] - rk4th[i])
-        println("%.${FORMAT}f , %.${FORMAT}f , %.${FORMAT}f , %.${FORMAT}f, %.${FORMAT}f, %.${FORMAT}f, %.${FORMAT}f ,"
-            .format(h*i, analytical[i], euler[i], rk4th[i], deltaEuler, deltaRK4th, deltaEulerToRK))
+        println(
+            "%.${FORMAT}f , %.${FORMAT}f , %.${FORMAT}f , %.${FORMAT}f, %.${FORMAT}f, %.${FORMAT}f, %.${FORMAT}f ,"
+                .format(h * i, analytical[i], euler[i], rk4th[i], deltaEuler, deltaRK4th, deltaEulerToRK)
+        )
     }
     println("=".padEnd(80, '=') + "\n")
 }
